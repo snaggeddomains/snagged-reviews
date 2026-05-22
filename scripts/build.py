@@ -213,10 +213,10 @@ def card_html(t):
     actions = []
     if t.get("url"):
         actions.append(f'<a class="linkbtn" href="{t["url"]}" target="_blank" rel="noopener">{X_LOGO}View on X</a>')
-    if t.get("shot"):
-        link_attr = f' data-link="{t["url"]}"' if t.get("url") else ""
+    # Only offer the screenshot when there's no X link — the live post is better proof, so don't show both.
+    if t.get("shot") and not t.get("url"):
         actions.append(f'<button type="button" class="linkbtn" data-shot="assets/screenshots/{t["shot"]}" '
-                       f'data-name="{html.escape(t["name"])}"{link_attr}>{EYE}View screenshot</button>')
+                       f'data-name="{html.escape(t["name"])}">{EYE}View screenshot</button>')
     actions_html = ('<div class="card__actions">' + ''.join(actions) + '</div>') if actions else '<span></span>'
 
     date_html = f'<span class="card__date">{html.escape(t["date"])}</span>' if t.get("date") else '<span class="card__date"></span>'
@@ -453,7 +453,7 @@ PAGE = f'''<!DOCTYPE html>
         <div class="section__head">
           <h2>What people say about Snagged</h2>
           <p>Every Snagged.com review below is from a real, named client — pulled from public posts on X,
-            emails and text messages. Tap “View screenshot” to see the original.</p>
+            emails and text messages. Tap “View on X” to open the original post.</p>
         </div>
 
         <div class="filters" role="group" aria-label="Filter reviews by source">
@@ -475,8 +475,8 @@ PAGE = f'''<!DOCTYPE html>
       <div class="wrap">
         <div class="about__grid">
           <div class="about__art">
-            <img src="assets/brand/mascot-negotiation.png" width="560" height="703" loading="lazy"
-                 alt="The Snagged mascot negotiating a domain deal">
+            <img src="assets/brand/mascot-handshake.png" width="600" height="581" loading="lazy"
+                 alt="The Snagged mascot shaking hands on a closed domain deal">
           </div>
           <div>
             <h2>About Snagged</h2>
