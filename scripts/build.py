@@ -89,10 +89,6 @@ T = [
          source="direct", verified=False, featured=True, date=None, iso=None,
          domain="Balanced.com",
          text="Rob, without you, we wouldn't have known where to start. From the initial call to learning how this whole process works all the way to flipping over the domain with terms that were comfortable and thoughtful for our business — you were incredible and made us feel comfortable and supported throughout the entire process. You were proactive with updates, even if we were still in a holding pattern, which helped establish trust that you had it all under control. It can be a long journey and you kept us apprised every step of the way. You were creative in your approach to getting the deal done and built up rapport with the other party to be open and flexible in negotiations. Couldn't have done it without ya — one-stop shop, also included laughs along the way. 10/10 experience."),
-    dict(name="Garry Tan", handle="garrytan", role="CEO, Y Combinator",
-         source="x", verified=True, featured=False, date="Mar 5, 2026", iso="2026-03-05",
-         url="https://x.com/garrytan/status/2029451256599834922", shot="garrytan-glist.png",
-         text="I just worked with @snagged and @rob to get gli [dot] st — man, so easy to get whatever domain you want with them"),
     dict(name="Kyle Ledbetter", handle="kyleledbetter", role="Founder, Dreambase",
          source="x", verified=True, featured=False, date="Apr 29, 2026", iso="2026-04-29",
          url="https://x.com/kyleledbetter", shot="kyle-ledbetter-dreambase.png",
@@ -122,26 +118,13 @@ T = [
     dict(name="Jonathan Razi", handle=None, role=None,
          source="email", verified=False, featured=False, date=None, iso=None,
          text="I confirmed it's in my GoDaddy account and I completed the final step in Escrow.com. You and your team did a fantastic job on this domain acquisition — I really appreciate the help, and I look forward to partnering with you again in the future!"),
-    dict(name="Alexis Ohanian", handle="alexisohanian", role="Founder, 776 · Co-founder, Reddit",
-         source="x", verified=True, featured=False, date="Jan 14, 2024", iso="2024-01-14",
-         url="https://x.com/alexisohanian/status/1746597719718682951", shot="ohanian-goto.png",
-         text="Shoutout to @Rob Schutz (co-founder of @Ro) who is my go-to for domains (he just helped me with another one) — if you need some help securing one, I can't recommend a better dude for it: snagged.com"),
     dict(name="mert", handle="mert", role="Helius",
          source="x", verified=True, featured=False, date="Jan 3, 2026", iso="2026-01-03",
          url="https://x.com/mert/status/2007432661774614592", shot="mert-quick.png",
          text="btw big shoutout to @snagged for helping me get this super quick and for a reasonable price\n\nwould recommend if you're looking for solid domains"),
-    dict(name="Garry Tan", handle="garrytan", role="CEO, Y Combinator",
-         source="x", verified=True, featured=False, date="Jan 29, 2026", iso="2026-01-29",
-         url="https://x.com/garrytan/status/2016988210388426843", shot="garrytan-session.png",
-         text="My buddy @rob of Snagged is doing a session about everything he knows about getting domain names. If his X name is @rob you can guess he is really good at this."),
     dict(name="Kelvin Zhang", handle=None, role="Gleam",
          source="email", verified=False, featured=False, date="Mar 25, 2026", iso="2026-03-25",
          text="Awesome! We just made the purchase 🎉 Thanks for closing the deal! LET'S GOOOO"),
-    dict(name="Alexis Ohanian", handle="alexisohanian", role="Founder, 776 · Co-founder, Reddit",
-         source="x", verified=True, featured=False, date="Jul 29, 2023", iso="2023-07-29",
-         url="https://x.com/alexisohanian/status/1685259473818918912",
-         domain="LAGC.com",
-         text="For real @rob is a legend for the dad jokes and his domain skills. He's helped me acquire LAGC.com most recently and likely many more for years to come 💪"),
     dict(name="Gabe Greenberg", handle=None, role="Founder & CEO, G2i",
          source="email", verified=False, featured=False, date="Oct 21, 2025", iso="2025-10-21",
          text="We may have some other needs come up…. You'll be top of my list and I'll also send founders your way."),
@@ -246,6 +229,12 @@ counts = {"all": total, "x": 0, "email": 0, "text": 0, "direct": 0}
 for t in T:
     counts[t["source"]] += 1
 
+# --- title / meta description (defined early; used in head + structured data) -
+title = "Snagged Reviews — What Founders Say About the Snagged.com Domain Broker"
+desc = ("Snagged reviews: verified testimonials from founders and operators who used Snagged.com to "
+        "acquire premium domains. See what Alexis Ohanian, Garry Tan, Nathan Barry, Theo and more say "
+        "about Rob, Brian and the Snagged domain broker team — rated 5.0/5.")
+
 # --- JSON-LD structured data ------------------------------------------------
 reviews_ld = []
 for t in T:
@@ -269,6 +258,10 @@ org_ld = {
     "url": "https://snagged.com",
     "description": "Snagged is a premium domain name brokerage and acquisition service founded by Rob Schutz that helps founders and companies track down, negotiate and acquire hard-to-get domain names.",
     "founder": {"@type": "Person", "name": "Rob Schutz"},
+    "employee": [
+        {"@type": "Person", "name": "Rob Schutz", "jobTitle": "Founder", "sameAs": "https://x.com/rob"},
+        {"@type": "Person", "name": "Brian Jarcho", "jobTitle": "Partner"},
+    ],
     "sameAs": ["https://x.com/snagged", "https://x.com/rob"],
     "aggregateRating": {
         "@type": "AggregateRating",
@@ -289,13 +282,19 @@ faqs = [
     ("What do people say in Snagged reviews?",
      "Reviews of Snagged are overwhelmingly positive. Across the testimonials collected here the average rating is 5.0 out of 5. Clients consistently highlight the speed (\"fastest response time I've ever seen\"), how painless the process is (\"they made it 100% painless\"), and the strong negotiation (one founder reported getting \"$20K off\" a domain)."),
     ("Who is Rob from Snagged?",
-     "Rob Schutz is the founder of Snagged and the co-founder of Ro. On X he goes by @rob. Founders routinely describe him as their go-to broker for hard-to-get domains and praise his transparency, responsiveness and negotiating skills."),
+     "Rob Schutz is the founder of Snagged and the co-founder of Ro (and previously the first marketing hire at Bark). On X he goes by @rob. Founders routinely describe him as their go-to broker for hard-to-get domains and praise his transparency, responsiveness and negotiating skills. He runs Snagged alongside partner Brian Jarcho, who spent seven years on Zocdoc's leadership team and over twenty years in enterprise sales."),
     ("What domains has Snagged helped acquire?",
      "Clients have publicly credited Snagged with deals including Ohanian.com (Alexis Ohanian), Kit.com (Nathan Barry), \"Huge If True\" .com (Cleo Abram), Mainstreet.AI (Jesse Tinsley), dreambase.com (Kyle Ledbetter), zodl.com (mert) and gli.st (Garry Tan), among many others."),
     ("How much does Snagged cost?",
      "Pricing depends on the specific domain and the scope of the acquisition. Clients note that Snagged negotiates strong deals — one founder reported saving $20K in a single negotiation. For a quote on a specific domain, reach out through snagged.com."),
     ("How do I work with Snagged?",
      "Head to snagged.com and tell the team which domain or social handle you're after. They'll scope the acquisition, handle outreach and negotiation with the current owner, and manage escrow and the transfer end to end."),
+    ("Are the Snagged reviews on this page real?",
+     "Yes. Every review is attributed to a named person, and where it began as a public post it links straight to the original on X so you can verify it yourself. The rest are emails and text messages clients sent the Snagged team. Nothing on this page is anonymous or invented."),
+    ("Is Snagged worth it?",
+     "For founders chasing a specific, hard-to-get domain, the reviews of Snagged are consistent: it saves months of back-and-forth, takes the stress out of negotiating with owners, and often lands a better price than going direct — one founder reported saving $20K. If the exact .com or .ai you want is already taken, that is precisely what Snagged is for."),
+    ("Where can I find more reviews of Snagged?",
+     "Beyond this page, the most candid Snagged.com reviews live on X, where founders such as Alexis Ohanian, Garry Tan, Nathan Barry, Cleo Abram and Theo have posted about their domain acquisitions unprompted. Every review collected here links back to its original post."),
 ]
 faq_ld = {
     "@context": "https://schema.org",
@@ -308,10 +307,16 @@ faq_ld = {
 }
 webpage_ld = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
+    "@type": "WebPage",
     "name": "Snagged Reviews",
     "url": SITE_URL,
+    "inLanguage": "en",
+    "description": desc,
+    "dateModified": "2026-05-22",
+    "primaryImageOfPage": SITE_URL + "assets/img/og-image.png",
     "about": {"@type": "Organization", "name": "Snagged", "url": "https://snagged.com"},
+    "isPartOf": {"@type": "WebSite", "name": "Snagged Reviews", "url": SITE_URL},
+    "significantLink": "https://www.snagged.com/",
 }
 
 def ld(obj):
@@ -327,7 +332,7 @@ faq_html = '\n'.join(
         </details>''' for i, (q, a) in enumerate(faqs)
 )
 
-LOGOS = ["Reddit", "Y Combinator", "Kit", "t3.gg", "Helius", "Gleam", "G2i", "Dreambase", "Balanced", "776"]
+LOGOS = ["Reddit", "Y Combinator", "Kit", "Nourish", "Slash", "Monarch", "Graphite", "Scribe", "Delete", "Seneca", "Lovable"]
 logos_html = '\n'.join(f'        <span>{l}</span>' for l in LOGOS)
 
 def wave(flip=False):
@@ -335,11 +340,6 @@ def wave(flip=False):
     return (f'<svg class="{cls}" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true">'
             '<path fill="#f4eee1" d="M0,0 H1440 V30 C1240,66 1110,10 870,34 C660,55 500,4 270,30 '
             'C175,41 75,39 0,27 Z"/></svg>')
-
-title = "Snagged Reviews — 31 Verified Testimonials for Snagged.com Domain Broker"
-desc = ("Snagged reviews: 31 verified testimonials from founders and operators who used Snagged.com to "
-        "acquire premium domains. See what Alexis Ohanian, Garry Tan, Nathan Barry, Theo and more say "
-        "about the Snagged domain broker — rated 5.0/5.")
 
 # --- page -------------------------------------------------------------------
 PAGE = f'''<!DOCTYPE html>
@@ -350,7 +350,7 @@ PAGE = f'''<!DOCTYPE html>
   <title>{html.escape(title)}</title>
   <meta name="description" content="{html.escape(desc)}">
   <link rel="canonical" href="{SITE_URL}">
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="theme-color" content="#cfeaef">
   <meta name="author" content="Snagged">
   <meta name="keywords" content="Snagged reviews, Snagged.com reviews, Snagged domain broker reviews, is Snagged legit, Snagged testimonials, Rob Schutz domains, domain broker reviews">
@@ -402,17 +402,17 @@ PAGE = f'''<!DOCTYPE html>
           <span class="eyebrow">{STAR} Verified Snagged reviews &amp; testimonials</span>
           <h1>Snagged <span class="grad">Reviews</span></h1>
           <p class="hero__lede">What founders and operators really say about <strong>Snagged.com</strong> — the
-            domain broker that tracks down hard-to-get domain names and gets the deal done. {total} verified
-            reviews, all from real clients and public posts on X.</p>
+            domain broker that tracks down hard-to-get domain names and gets the deal done. Real reviews from
+            real clients, pulled from public posts on X plus emails and texts.</p>
 
           <div class="hero__cta">
             <a class="btn btn--primary btn--lg" href="#reviews">Read the reviews</a>
             <a class="btn btn--ghost btn--lg" href="{SNAGGED_URL}" target="_blank" rel="noopener">Work with Snagged {ARROW}</a>
           </div>
 
-          <div class="rating" role="img" aria-label="Rated 5.0 out of 5 from {total} reviews">
+          <div class="rating" role="img" aria-label="Rated 5.0 out of 5 by founders and operators">
             <span class="stars">{STAR}{STAR}{STAR}{STAR}{STAR}</span>
-            <span class="rating__line"><strong>5.0 / 5.0</strong> average from <strong>{total} verified reviews</strong></span>
+            <span class="rating__line"><strong>5.0 / 5.0</strong> from verified founder &amp; operator reviews</span>
           </div>
         </div>
 
@@ -433,27 +433,14 @@ PAGE = f'''<!DOCTYPE html>
       </div>
     </section>
 
-    <section aria-label="Snagged by the numbers">
-      <div class="wrap" style="padding-bottom:60px">
-        <div class="statbar">
-          <div class="statbar__item"><span class="statbar__num">5.0★</span><span class="statbar__lab">average rating</span></div>
-          <span class="statbar__div" aria-hidden="true"></span>
-          <div class="statbar__item"><span class="statbar__num">{total}</span><span class="statbar__lab">verified reviews</span></div>
-          <span class="statbar__div" aria-hidden="true"></span>
-          <div class="statbar__item"><span class="statbar__num">100%</span><span class="statbar__lab">“painless,” per clients</span></div>
-          <span class="statbar__div" aria-hidden="true"></span>
-          <div class="statbar__item"><span class="statbar__num">Reddit · YC · Kit</span><span class="statbar__lab">founders trust Snagged</span></div>
-        </div>
-      </div>
-    </section>
-
     <section class="reviews" id="reviews">
       {wave()}
       <div class="reviews__body">
         <div class="section__head">
-          <h2>What people say about Snagged</h2>
-          <p>Every Snagged.com review below is from a real, named client — pulled from public posts on X,
-            emails and text messages. Tap “View on X” to open the original post.</p>
+          <h2>Snagged reviews from founders &amp; operators</h2>
+          <p>Looking for reviews of Snagged? Every Snagged.com review below is from a real, named client —
+            pulled from public posts on X, plus emails and text messages — so you can judge the Snagged domain
+            broker for yourself. Tap “View on X” to open the original post.</p>
         </div>
 
         <div class="filters" role="group" aria-label="Filter reviews by source">
@@ -467,27 +454,45 @@ PAGE = f'''<!DOCTYPE html>
         <div class="wall">
 {cards}
         </div>
+
+        <p class="reviews__note">Across every Snagged review here the verdict is the same: founders call the
+          process fast, painless and genuinely worth it — and keep coming back for their next domain.</p>
       </div>
       {wave(flip=True)}
     </section>
 
     <section class="section section--cream" id="about">
       <div class="wrap">
-        <div class="about__grid">
-          <div class="about__art">
-            <img src="assets/brand/mascot-handshake.png" width="600" height="581" loading="lazy"
-                 alt="The Snagged mascot shaking hands on a closed domain deal">
-          </div>
-          <div>
-            <h2>About Snagged</h2>
-            <p class="muted" style="font-size:1.1rem">Snagged (<a href="{SNAGGED_URL}" target="_blank" rel="noopener">snagged.com</a>)
-              is a premium domain name brokerage founded by Rob Schutz, co-founder of Ro. The team tracks down
-              hard-to-get domains, negotiates with current owners, and handles escrow and transfer end to end —
-              the work behind every five-star Snagged review on this page.</p>
-            <div class="faq" id="faq">
+        <div class="section__head">
+          <h2>About Snagged</h2>
+          <p>Snagged (<a href="{SNAGGED_URL}" target="_blank" rel="noopener">snagged.com</a>) is a premium
+            domain brokerage founded by Rob Schutz, co-founder of Ro. Rob and Brian Jarcho lead a team that
+            tracks down hard-to-get domains, negotiates with current owners, and handles escrow and transfer
+            end to end — the work behind every five-star Snagged review on this page.</p>
+        </div>
+
+        <h3 class="team__head">Meet the team</h3>
+        <div class="team">
+          <article class="team__card">
+            <div class="team__photo team__photo--sky" aria-hidden="true">RS</div>
+            <span class="team__pill">Rob Schutz</span>
+            <p class="team__role">Founder</p>
+            <p class="team__bio">Rob is the co-founder and former Chief Growth Officer of Ro, the telehealth
+              company. Prior to that, he was the VP of Growth and the first marketing hire at Bark (NYSE: BARK).
+              A fully certified domain nerd, he's also <span class="mention">@rob</span> on X/Twitter.</p>
+          </article>
+          <article class="team__card">
+            <div class="team__photo team__photo--coral" aria-hidden="true">BJ</div>
+            <span class="team__pill">Brian Jarcho</span>
+            <p class="team__role">Partner</p>
+            <p class="team__bio">Brian helps businesses grow, drawing on seven years on Zocdoc's leadership team
+              and over twenty years in enterprise sales. A lifelong brand and domain enthusiast, he joined
+              Snagged to help others unlock the value of premium domains.</p>
+          </article>
+        </div>
+
+        <div class="faq" id="faq">
 {faq_html}
-            </div>
-          </div>
         </div>
       </div>
     </section>
