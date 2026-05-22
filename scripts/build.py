@@ -372,8 +372,8 @@ PAGE = f'''<!DOCTYPE html>
   <link rel="apple-touch-icon" href="assets/brand/webclip.png">
   <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="preconnect" href="{SNAGGED_URL}">
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/baloo2.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/gasoekone.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/bricolagegrotesque.woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
 
   {ld(org_ld)}
