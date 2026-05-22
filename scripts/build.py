@@ -276,13 +276,13 @@ org_ld = {
 
 faqs = [
     ("Is Snagged legit?",
-     "Yes. Snagged (snagged.com) is a real domain name brokerage founded by Rob Schutz, co-founder of the healthcare company Ro. Well-known founders and operators — including Alexis Ohanian (Reddit), Garry Tan (Y Combinator), Nathan Barry (Kit), Esther Crawford and Theo (t3.gg) — have publicly thanked Snagged for acquiring premium domains on their behalf. Every Snagged review on this page comes from a real, named client or a public post on X."),
+     "Yes. Snagged (snagged.com) is a real domain name brokerage founded by Rob Schutz, co-founder of the healthcare company Ro, and run alongside partner Brian Jarcho, who spent seven years on Zocdoc's leadership team and over twenty years in enterprise sales. Well-known founders and operators — including Alexis Ohanian (Reddit), Garry Tan (Y Combinator), Nathan Barry (Kit), Esther Crawford and Theo (t3.gg) — have publicly thanked Snagged for acquiring premium domains on their behalf. Every Snagged review on this page comes from a real, named client or a public post on X."),
     ("What is Snagged.com?",
      "Snagged is a premium domain brokerage and acquisition service. The team finds hard-to-get domain names, reaches out to and negotiates with the current owner on your behalf, and manages the escrow and transfer process from start to finish — so you don't have to deal with the domain world yourself."),
     ("What do people say in Snagged reviews?",
      "Reviews of Snagged are overwhelmingly positive. Across the testimonials collected here the average rating is 5.0 out of 5. Clients consistently highlight the speed (\"fastest response time I've ever seen\"), how painless the process is (\"they made it 100% painless\"), and the strong negotiation (one founder reported getting \"$20K off\" a domain)."),
     ("Who is Rob from Snagged?",
-     "Rob Schutz is the founder of Snagged and the co-founder of Ro (and previously the first marketing hire at Bark). On X he goes by @rob. Founders routinely describe him as their go-to broker for hard-to-get domains and praise his transparency, responsiveness and negotiating skills. He runs Snagged alongside partner Brian Jarcho, who spent seven years on Zocdoc's leadership team and over twenty years in enterprise sales."),
+     "Rob Schutz is the founder of Snagged and the co-founder of Ro (and previously the first marketing hire at Bark). On X he goes by @rob. Founders routinely describe him as their go-to broker for hard-to-get domains and praise his transparency, responsiveness and negotiating skills."),
     ("What domains has Snagged helped acquire?",
      "Clients have publicly credited Snagged with deals including Ohanian.com (Alexis Ohanian), Kit.com (Nathan Barry), \"Huge If True\" .com (Cleo Abram), Mainstreet.AI (Jesse Tinsley), dreambase.com (Kyle Ledbetter), zodl.com (mert) and gli.st (Garry Tan), among many others."),
     ("How much does Snagged cost?",
@@ -466,29 +466,9 @@ PAGE = f'''<!DOCTYPE html>
         <div class="section__head">
           <h2>About Snagged</h2>
           <p>Snagged (<a href="{SNAGGED_URL}" target="_blank" rel="noopener">snagged.com</a>) is a premium
-            domain brokerage founded by Rob Schutz, co-founder of Ro. Rob and Brian Jarcho lead a team that
-            tracks down hard-to-get domains, negotiates with current owners, and handles escrow and transfer
-            end to end — the work behind every five-star Snagged review on this page.</p>
-        </div>
-
-        <h3 class="team__head">Meet the team</h3>
-        <div class="team">
-          <article class="team__card">
-            <div class="team__photo team__photo--sky" aria-hidden="true">RS</div>
-            <span class="team__pill">Rob Schutz</span>
-            <p class="team__role">Founder</p>
-            <p class="team__bio">Rob is the co-founder and former Chief Growth Officer of Ro, the telehealth
-              company. Prior to that, he was the VP of Growth and the first marketing hire at Bark (NYSE: BARK).
-              A fully certified domain nerd, he's also <span class="mention">@rob</span> on X/Twitter.</p>
-          </article>
-          <article class="team__card">
-            <div class="team__photo team__photo--coral" aria-hidden="true">BJ</div>
-            <span class="team__pill">Brian Jarcho</span>
-            <p class="team__role">Partner</p>
-            <p class="team__bio">Brian helps businesses grow, drawing on seven years on Zocdoc's leadership team
-              and over twenty years in enterprise sales. A lifelong brand and domain enthusiast, he joined
-              Snagged to help others unlock the value of premium domains.</p>
-          </article>
+            domain brokerage founded by Rob Schutz, co-founder of Ro. Rob and Brian Jarcho track down
+            hard-to-get domains, negotiate with current owners, and handle escrow and transfer end to end —
+            the work behind every five-star Snagged review on this page.</p>
         </div>
 
         <div class="faq" id="faq">
