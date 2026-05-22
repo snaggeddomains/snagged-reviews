@@ -384,7 +384,6 @@ PAGE = f'''<!DOCTYPE html>
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="/" aria-label="Snagged Reviews home">
-        <img class="brand__mark" src="assets/brand/logomark-round.svg" alt="" width="38" height="38">
         Snagged<span class="brand__sub">&nbsp;Reviews</span>
       </a>
       <nav class="nav" aria-label="Primary">
@@ -436,11 +435,14 @@ PAGE = f'''<!DOCTYPE html>
 
     <section aria-label="Snagged by the numbers">
       <div class="wrap" style="padding-bottom:60px">
-        <div class="stats">
-          <div class="stat"><div class="stat__num">5.0★</div><div class="stat__lab">Average rating across every review</div></div>
-          <div class="stat"><div class="stat__num">{total}</div><div class="stat__lab">Verified testimonials &amp; reviews</div></div>
-          <div class="stat"><div class="stat__num">2 yrs&nbsp;→&nbsp;2 wks</div><div class="stat__lab">DIY vs. with Snagged (per a client)</div></div>
-          <div class="stat"><div class="stat__num">100%</div><div class="stat__lab">"Painless" — how clients describe it</div></div>
+        <div class="statbar">
+          <div class="statbar__item"><span class="statbar__num">5.0★</span><span class="statbar__lab">average rating</span></div>
+          <span class="statbar__div" aria-hidden="true"></span>
+          <div class="statbar__item"><span class="statbar__num">{total}</span><span class="statbar__lab">verified reviews</span></div>
+          <span class="statbar__div" aria-hidden="true"></span>
+          <div class="statbar__item"><span class="statbar__num">100%</span><span class="statbar__lab">“painless,” per clients</span></div>
+          <span class="statbar__div" aria-hidden="true"></span>
+          <div class="statbar__item"><span class="statbar__num">Reddit · YC · Kit</span><span class="statbar__lab">founders trust Snagged</span></div>
         </div>
       </div>
     </section>
