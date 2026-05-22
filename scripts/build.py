@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 
 SITE_URL = "https://snaggedreviews.com/"
+# Outbound CTA link to Snagged, with UTM tracking (HTML-attribute safe: &amp;).
+SNAGGED_URL = "https://www.snagged.com/?utm_source=snagged_review&amp;utm_medium=link_click"
 ROOT = Path(__file__).resolve().parent.parent
 
 # --- SVG snippets -----------------------------------------------------------
@@ -328,6 +330,12 @@ faq_html = '\n'.join(
 LOGOS = ["Reddit", "Y Combinator", "Kit", "t3.gg", "Helius", "Gleam", "G2i", "Dreambase", "Balanced", "776"]
 logos_html = '\n'.join(f'        <span>{l}</span>' for l in LOGOS)
 
+def wave(flip=False):
+    cls = "wave wave--flip" if flip else "wave"
+    return (f'<svg class="{cls}" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true">'
+            '<path fill="#f4eee1" d="M0,0 H1440 V30 C1240,66 1110,10 870,34 C660,55 500,4 270,30 '
+            'C175,41 75,39 0,27 Z"/></svg>')
+
 title = "Snagged Reviews — 31 Verified Testimonials for Snagged.com Domain Broker"
 desc = ("Snagged reviews: 31 verified testimonials from founders and operators who used Snagged.com to "
         "acquire premium domains. See what Alexis Ohanian, Garry Tan, Nathan Barry, Theo and more say "
@@ -343,7 +351,7 @@ PAGE = f'''<!DOCTYPE html>
   <meta name="description" content="{html.escape(desc)}">
   <link rel="canonical" href="{SITE_URL}">
   <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#cfeaef">
   <meta name="author" content="Snagged">
   <meta name="keywords" content="Snagged reviews, Snagged.com reviews, Snagged domain broker reviews, is Snagged legit, Snagged testimonials, Rob Schutz domains, domain broker reviews">
 
@@ -360,10 +368,12 @@ PAGE = f'''<!DOCTYPE html>
   <meta name="twitter:description" content="{html.escape(desc)}">
   <meta name="twitter:image" content="{SITE_URL}assets/img/og-image.png">
 
-  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="assets/img/favicon-512.png">
-  <link rel="icon" href="assets/img/favicon-512.png" sizes="512x512" type="image/png">
-  <link rel="preconnect" href="https://snagged.com">
+  <link rel="icon" href="assets/brand/logomark-round.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/brand/webclip.png">
+  <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="preconnect" href="{SNAGGED_URL}">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/baloo2.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/inter.woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
 
   {ld(org_ld)}
@@ -374,40 +384,47 @@ PAGE = f'''<!DOCTYPE html>
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="/" aria-label="Snagged Reviews home">
-        <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-          <rect width="40" height="40" rx="11" fill="#2563eb"/>
-          <path d="M11 21.5l5.5 5.5L29 14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <img class="brand__mark" src="assets/brand/logomark-round.svg" alt="" width="38" height="38">
         Snagged<span class="brand__sub">&nbsp;Reviews</span>
       </a>
       <nav class="nav" aria-label="Primary">
         <a class="nav__link" href="#reviews">Reviews</a>
         <a class="nav__link" href="#faq">FAQ</a>
         <a class="nav__link" href="#about">About Snagged</a>
-        <a class="btn btn--primary" href="https://snagged.com" target="_blank" rel="noopener">Visit Snagged.com</a>
+        <a class="btn btn--navy" href="{SNAGGED_URL}" target="_blank" rel="noopener">Visit Snagged.com</a>
       </nav>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <div class="wrap center">
-        <span class="eyebrow">{STAR} Verified Snagged reviews &amp; testimonials</span>
-        <h1>Snagged <span class="grad">Reviews</span></h1>
-        <p class="hero__lede">What founders and operators really say about <strong>Snagged.com</strong> — the
-          domain broker that tracks down hard-to-get domain names and gets the deal done. {total} verified
-          reviews, all from real clients and public posts on X.</p>
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <span class="eyebrow">{STAR} Verified Snagged reviews &amp; testimonials</span>
+          <h1>Snagged <span class="grad">Reviews</span></h1>
+          <p class="hero__lede">What founders and operators really say about <strong>Snagged.com</strong> — the
+            domain broker that tracks down hard-to-get domain names and gets the deal done. {total} verified
+            reviews, all from real clients and public posts on X.</p>
 
-        <div class="hero__cta">
-          <a class="btn btn--primary btn--lg" href="#reviews">Read the reviews</a>
-          <a class="btn btn--ghost btn--lg" href="https://snagged.com" target="_blank" rel="noopener">Work with Snagged {ARROW}</a>
+          <div class="hero__cta">
+            <a class="btn btn--primary btn--lg" href="#reviews">Read the reviews</a>
+            <a class="btn btn--ghost btn--lg" href="{SNAGGED_URL}" target="_blank" rel="noopener">Work with Snagged {ARROW}</a>
+          </div>
+
+          <div class="rating" role="img" aria-label="Rated 5.0 out of 5 from {total} reviews">
+            <span class="stars">{STAR}{STAR}{STAR}{STAR}{STAR}</span>
+            <span class="rating__line"><strong>5.0 / 5.0</strong> average from <strong>{total} verified reviews</strong></span>
+          </div>
         </div>
 
-        <div class="rating" role="img" aria-label="Rated 5.0 out of 5 from {total} reviews">
-          <span class="stars">{STAR}{STAR}{STAR}{STAR}{STAR}</span>
-          <span class="rating__line"><strong>5.0 / 5.0</strong> average from <strong>{total} verified reviews</strong></span>
+        <div class="hero__mascot">
+          <img src="assets/brand/mascot-hero.png" width="820" height="940" fetchpriority="high"
+               alt="The Snagged fisherman mascot reeling in a freshly caught domain name">
+          <img class="hero__sticker" src="assets/brand/sticker-fresh.png" width="420" height="415" alt="" loading="lazy">
         </div>
+      </div>
 
+      <div class="wrap">
         <div class="trust">
           <p class="trust__label">Trusted by founders &amp; operators behind</p>
           <div class="logos">
@@ -417,17 +434,20 @@ PAGE = f'''<!DOCTYPE html>
       </div>
     </section>
 
-    <section class="wrap" aria-label="Snagged by the numbers">
-      <div class="stats">
-        <div class="stat"><div class="stat__num">5.0★</div><div class="stat__lab">Average rating across every review</div></div>
-        <div class="stat"><div class="stat__num">{total}</div><div class="stat__lab">Verified testimonials &amp; reviews</div></div>
-        <div class="stat"><div class="stat__num">2 yrs → 2 wks</div><div class="stat__lab">DIY vs. with Snagged (per a client)</div></div>
-        <div class="stat"><div class="stat__num">100%</div><div class="stat__lab">"Painless" — how clients describe it</div></div>
+    <section aria-label="Snagged by the numbers">
+      <div class="wrap" style="padding-bottom:60px">
+        <div class="stats">
+          <div class="stat"><div class="stat__num">5.0★</div><div class="stat__lab">Average rating across every review</div></div>
+          <div class="stat"><div class="stat__num">{total}</div><div class="stat__lab">Verified testimonials &amp; reviews</div></div>
+          <div class="stat"><div class="stat__num">2 yrs&nbsp;→&nbsp;2 wks</div><div class="stat__lab">DIY vs. with Snagged (per a client)</div></div>
+          <div class="stat"><div class="stat__num">100%</div><div class="stat__lab">"Painless" — how clients describe it</div></div>
+        </div>
       </div>
     </section>
 
-    <section class="section" id="reviews">
-      <div class="wrap">
+    <section class="reviews" id="reviews">
+      {wave()}
+      <div class="reviews__body">
         <div class="section__head">
           <h2>What people say about Snagged</h2>
           <p>Every Snagged.com review below is from a real, named client — pulled from public posts on X,
@@ -446,30 +466,43 @@ PAGE = f'''<!DOCTYPE html>
 {cards}
         </div>
       </div>
+      {wave(flip=True)}
     </section>
 
-    <section class="section section--soft" id="about">
+    <section class="section section--cream" id="about">
       <div class="wrap">
-        <div class="section__head">
-          <h2>About Snagged</h2>
-          <p>Snagged (<a href="https://snagged.com" target="_blank" rel="noopener">snagged.com</a>) is a premium
-            domain name brokerage founded by Rob Schutz, co-founder of Ro. The team specializes in tracking down
-            hard-to-get domains, negotiating with current owners, and handling escrow and transfer end to end —
-            the work behind every five-star Snagged review on this page.</p>
-        </div>
-        <div class="faq" id="faq">
+        <div class="about__grid">
+          <div class="about__art">
+            <img src="assets/brand/mascot-negotiation.png" width="560" height="703" loading="lazy"
+                 alt="The Snagged mascot negotiating a domain deal">
+          </div>
+          <div>
+            <h2>About Snagged</h2>
+            <p class="muted" style="font-size:1.1rem">Snagged (<a href="{SNAGGED_URL}" target="_blank" rel="noopener">snagged.com</a>)
+              is a premium domain name brokerage founded by Rob Schutz, co-founder of Ro. The team tracks down
+              hard-to-get domains, negotiates with current owners, and handles escrow and transfer end to end —
+              the work behind every five-star Snagged review on this page.</p>
+            <div class="faq" id="faq">
 {faq_html}
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <section class="cta-section">
       <div class="wrap">
         <div class="cta">
-          <h2>Want results like these?</h2>
-          <p>Join the founders who let Snagged track down and negotiate their perfect domain — painlessly.
-            Tell the team which name you're after and they'll handle the rest.</p>
-          <a class="btn btn--primary btn--lg" href="https://snagged.com" target="_blank" rel="noopener">Get started at Snagged.com {ARROW}</a>
+          <div>
+            <h2>Want results like these?</h2>
+            <p>Join the founders who let Snagged track down and negotiate their perfect domain — painlessly.
+              Tell the team which name you're after and they'll handle the rest.</p>
+            <a class="btn btn--primary btn--lg" href="{SNAGGED_URL}" target="_blank" rel="noopener">Get started at Snagged.com {ARROW}</a>
+          </div>
+          <div class="cta__art">
+            <img src="assets/brand/mascot-closing.png" width="640" height="682" loading="lazy"
+                 alt="The Snagged mascot celebrating a closed domain deal">
+          </div>
         </div>
       </div>
     </section>
@@ -479,13 +512,8 @@ PAGE = f'''<!DOCTYPE html>
     <div class="wrap">
       <div class="cols">
         <div>
-          <a class="brand" href="/">
-            <svg class="brand__mark" viewBox="0 0 40 40" aria-hidden="true">
-              <rect width="40" height="40" rx="11" fill="#2563eb"/>
-              <path d="M11 21.5l5.5 5.5L29 14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Snagged<span class="brand__sub">&nbsp;Reviews</span>
-          </a>
+          <img class="site-footer__word" src="assets/brand/wordmark-white.png" width="666" height="104"
+               alt="Snagged" loading="lazy">
           <p>The home for verified reviews and testimonials about Snagged.com — the domain broker founders
             recommend for hard-to-get domains.</p>
         </div>
@@ -493,7 +521,7 @@ PAGE = f'''<!DOCTYPE html>
           <a href="#reviews">Reviews</a>
           <a href="#faq">FAQ</a>
           <a href="#about">About Snagged</a>
-          <a href="https://snagged.com" target="_blank" rel="noopener">Snagged.com {ARROW}</a>
+          <a href="{SNAGGED_URL}" target="_blank" rel="noopener">Snagged.com {ARROW}</a>
         </nav>
       </div>
       <p class="disclaimer">Reviews on SnaggedReviews.com are sourced from public posts on X and from direct
