@@ -1,0 +1,17 @@
+{
+  "name": "domain-research",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI-assisted domain ownership research: fans out to WHOIS/RDAP, DNS, Wayback and premium data APIs, then uses an LLM to cross-reference and report.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "dependencies": {
+    "openai": "^4.67.0"
+  }
+}

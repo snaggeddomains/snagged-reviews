@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Domain Research</title>
+    <meta name="description" content="AI-assisted domain ownership research." />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="head">
+        <h1>Domain Research</h1>
+        <p class="sub">Enter a domain. The assistant fans out to WHOIS/RDAP, DNS, Wayback and any configured premium APIs, then reasons over the results.</p>
+      </header>
+
+      <form id="search" class="search" autocomplete="off">
+        <input id="domain" name="domain" type="text" placeholder="example.com" required />
+        <input id="question" name="question" type="text" placeholder="Optional: a specific question (e.g. 'has this changed hands recently?')" />
+        <button id="go" type="submit">Research</button>
+      </form>
+
+      <section id="status" class="status" hidden></section>
+
+      <section id="report" class="report" hidden></section>
+
+      <section id="evidence" class="evidence" hidden>
+        <details>
+          <summary>Evidence — lookups the assistant ran</summary>
+          <ul id="trace"></ul>
+        </details>
+      </section>
+
+      <form id="followup" class="followup" hidden autocomplete="off">
+        <input id="followup-input" type="text" placeholder="Ask a follow-up about this domain…" />
+        <button type="submit">Ask</button>
+      </form>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
