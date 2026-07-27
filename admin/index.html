@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snagged Reviews — Admin</title>
+  <!-- Keep the admin out of search engines. -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../assets/brand/logomark-round.svg" type="image/svg+xml">
+  <!-- Reuse the live site styles so the preview card is pixel-identical to production. -->
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin">
+
+  <!-- ============ LOGIN GATE ============ -->
+  <section id="gate" class="gate">
+    <form id="gate-form" class="gate__card" autocomplete="off">
+      <img class="gate__logo" src="../assets/brand/logomark-round.svg" width="52" height="52" alt="">
+      <h1>Snagged Reviews Admin</h1>
+      <p class="gate__sub">Enter the admin password to manage reviews &amp; tweets.</p>
+      <input id="gate-pass" type="password" placeholder="Password" aria-label="Admin password" autocomplete="current-password">
+      <button class="a-btn a-btn--primary" type="submit">Unlock</button>
+      <p id="gate-err" class="gate__err" hidden>Incorrect password.</p>
+      <p class="gate__note">This is a lightweight lock for a static site — the real protection on
+        publishing is your GitHub token, which never leaves this browser.</p>
+    </form>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app" hidden>
+    <header class="a-head">
+      <div class="a-head__brand">
+        <img src="../assets/brand/logomark-round.svg" width="30" height="30" alt="">
+        <strong>Snagged Reviews</strong><span class="a-tag">Admin</span>
+      </div>
+      <div class="a-head__actions">
+        <a class="a-link" href="/" target="_blank" rel="noopener">View site ↗</a>
+        <button id="btn-reload" class="a-btn a-btn--ghost" type="button">Reload data</button>
+        <button id="btn-signout" class="a-btn a-btn--ghost" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Token setup / status -->
+    <section id="token-bar" class="a-tokenbar">
+      <div class="a-tokenbar__row">
+        <span id="token-status" class="a-pill a-pill--warn">No GitHub token</span>
+        <input id="token-input" type="password" placeholder="Paste GitHub token (ghp_… or github_pat_…)"
+               aria-label="GitHub token" autocomplete="off">
+        <label class="a-check a-check--inline">
+          <input id="token-remember" type="checkbox" checked> Remember on this device
+        </label>
+        <button id="btn-savetoken" class="a-btn a-btn--primary" type="button">Save token</button>
+        <button id="btn-forgettoken" class="a-btn a-btn--ghost" type="button" hidden>Forget token</button>
+      </div>
+      <details class="a-help">
+        <summary>How do I get a token?</summary>
+        <ol>
+          <li>Go to <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained personal access tokens → Generate new</a>.</li>
+          <li>Resource owner: <strong>snaggeddomains</strong>. Repository access: <strong>Only select repositories → snaggeddomains/snagged-reviews</strong>.</li>
+          <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong>. (Nothing else is needed.)</li>
+          <li>Generate, copy the token, and paste it above. It's stored only in this browser.</li>
+        </ol>
+      </details>
+    </section>
+
+    <main class="a-grid">
+      <!-- LEFT: editor + live preview -->
+      <section class="a-panel">
+        <h2 id="form-title">Add a review / tweet</h2>
+        <form id="review-form" autocomplete="off">
+          <div class="a-field">
+            <label for="f-source">Source</label>
+            <select id="f-source">
+              <option value="x">X / Twitter post</option>
+              <option value="email">Email</option>
+              <option value="text">Text message</option>
+              <option value="direct">Direct testimonial</option>
+            </select>
+          </div>
+
+          <div class="a-field">
+            <label for="f-name">Name <span class="req">*</span></label>
+            <input id="f-name" type="text" placeholder="e.g. Alexis Ohanian" required>
+          </div>
+
+          <div class="a-row">
+            <div class="a-field">
+              <label for="f-handle">Handle <span class="hint">(without @)</span></label>
+              <input id="f-handle" type="text" placeholder="alexisohanian">
+            </div>
+            <div class="a-field">
+              <label for="f-role">Role / title</label>
+              <input id="f-role" type="text" placeholder="Founder, 776 · Co-founder, Reddit">
+            </div>
+          </div>
+
+          <div class="a-field" data-only="x">
+            <label for="f-url">X post URL <span class="hint">(links “View on X”)</span></label>
+            <input id="f-url" type="url" placeholder="https://x.com/handle/status/123…">
+          </div>
+
+          <div class="a-row">
+            <div class="a-field">
+              <label for="f-date">Date label <span class="hint">(shown on card)</span></label>
+              <input id="f-date" type="text" placeholder="Aug 27, 2025">
+            </div>
+            <div class="a-field">
+              <label for="f-iso">Date <span class="hint">(for SEO / structured data)</span></label>
+              <input id="f-iso" type="date">
+            </div>
+          </div>
+          <button id="btn-today" class="a-btn a-btn--tiny" type="button">Use today's date</button>
+
+          <div class="a-field">
+            <label for="f-domain">Acquired domain <span class="hint">(optional badge)</span></label>
+            <input id="f-domain" type="text" placeholder="Ohanian.com">
+          </div>
+
+          <div class="a-field" data-only="not-x">
+            <label for="f-shot">Screenshot filename <span class="hint">(optional; upload image to assets/screenshots/ separately)</span></label>
+            <input id="f-shot" type="text" placeholder="ohanian-ohanian-com.png">
+          </div>
+
+          <div class="a-checks">
+            <label class="a-check"><input id="f-verified" type="checkbox"> Verified badge</label>
+            <label class="a-check"><input id="f-featured" type="checkbox"> Featured (coral border)</label>
+            <label class="a-check"><input id="f-anon" type="checkbox"> Anonymous (quote avatar)</label>
+          </div>
+
+          <div class="a-field">
+            <label for="f-text">Testimonial text <span class="req">*</span> <span class="hint">(blank line = new paragraph)</span></label>
+            <textarea id="f-text" rows="6" placeholder="Paste the tweet or message text…" required></textarea>
+          </div>
+
+          <div class="a-field" id="pos-field">
+            <label for="f-pos">Add to</label>
+            <select id="f-pos">
+              <option value="top">Top of the wall (newest first)</option>
+              <option value="bottom">Bottom of the wall</option>
+            </select>
+          </div>
+
+          <div class="a-formbtns">
+            <button id="btn-apply" class="a-btn a-btn--primary" type="submit">Add to list</button>
+            <button id="btn-cancel" class="a-btn a-btn--ghost" type="button" hidden>Cancel edit</button>
+            <button id="btn-clear" class="a-btn a-btn--ghost" type="button">Clear form</button>
+          </div>
+        </form>
+
+        <h3 class="a-preview__h">Live preview</h3>
+        <div class="a-preview">
+          <div class="wall" id="preview-wall"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: current reviews + publish -->
+      <section class="a-panel">
+        <div class="a-publishbar">
+          <div>
+            <strong id="count-label">0 reviews</strong>
+            <span id="dirty-flag" class="a-pill a-pill--warn" hidden>Unpublished changes</span>
+          </div>
+          <div class="a-publishbar__btns">
+            <button id="btn-discard" class="a-btn a-btn--ghost" type="button" hidden>Discard</button>
+            <button id="btn-publish" class="a-btn a-btn--go" type="button" disabled>Publish to site</button>
+          </div>
+        </div>
+        <p class="a-hint">“Add to list” stages your changes here. Click <strong>Publish to site</strong> to
+          commit them — the site rebuilds automatically in about a minute.</p>
+        <ul id="review-list" class="a-list"></ul>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="a-toast" hidden></div>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

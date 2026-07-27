@@ -1,0 +1,46 @@
+name: Build site
+
+# Rebuilds index.html from data/reviews.json whenever the review data (or the
+# generator) changes. The /admin page commits to data/reviews.json via the
+# GitHub API; this workflow turns that data into the static, well-formatted
+# index.html that GitHub Pages serves.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/reviews.json"
+      - "scripts/build.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Rebuild index.html
+        run: python3 scripts/build.py
+
+      - name: Commit rebuilt site (if changed)
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html already up to date — nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          # [skip ci] + a paths filter that excludes index.html both prevent a rebuild loop.
+          git commit -m "Rebuild site from data/reviews.json [skip ci]"
+          git push
