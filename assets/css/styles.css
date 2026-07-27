@@ -152,6 +152,8 @@ p { margin: 0 0 1em; }
 .chip .chip__n { font-size: .82em; opacity: .75; }
 
 .reviews__note { max-width: 60ch; margin: 34px auto 0; text-align: center; color: #bfe0ea; font-size: 1.06rem; }
+/* Keep the review tiles off the very edges of the viewport. */
+.reviews__body { padding-left: clamp(16px, 4vw, 44px); padding-right: clamp(16px, 4vw, 44px); }
 .wall { column-width: 348px; column-gap: 20px; }
 .card {
   break-inside: avoid; margin: 0 0 20px; background: var(--cream-2);
