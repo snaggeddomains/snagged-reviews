@@ -1,0 +1,17 @@
+# Cloudflare Worker config for the Snagged Reviews admin backend.
+# Deploy:  cd worker && npx wrangler deploy   (see README.md for the full steps)
+
+name = "snagged-admin"
+main = "admin-worker.js"
+compatibility_date = "2024-11-01"
+
+# Repo the Worker reads/writes. Override here if it ever changes.
+[vars]
+REPO_OWNER = "snaggeddomains"
+REPO_NAME = "snagged-reviews"
+BRANCH = "main"
+FILE_PATH = "data/reviews.json"
+
+# Secrets are NOT stored here. Set them once after deploy:
+#   npx wrangler secret put GITHUB_TOKEN
+#   npx wrangler secret put ADMIN_PASSWORD
