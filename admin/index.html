@@ -6,17 +6,17 @@
   <title>Snagged Reviews — Admin</title>
   <!-- Keep the admin out of search engines. -->
   <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" href="../assets/brand/logomark-round.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/brand/logomark-round.svg" type="image/svg+xml">
   <!-- Reuse the live site styles so the preview card is pixel-identical to production. -->
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body class="admin">
 
   <!-- ============ LOGIN GATE ============ -->
   <section id="gate" class="gate">
     <form id="gate-form" class="gate__card" autocomplete="off">
-      <img class="gate__logo" src="../assets/brand/logomark-round.svg" width="52" height="52" alt="">
+      <img class="gate__logo" src="/assets/brand/logomark-round.svg" width="52" height="52" alt="">
       <h1>Snagged Reviews Admin</h1>
       <p class="gate__sub">Enter the admin password to manage reviews &amp; tweets.</p>
       <input id="gate-pass" type="password" placeholder="Password" aria-label="Admin password" autocomplete="current-password">
@@ -31,7 +31,7 @@
   <div id="app" hidden>
     <header class="a-head">
       <div class="a-head__brand">
-        <img src="../assets/brand/logomark-round.svg" width="30" height="30" alt="">
+        <img src="/assets/brand/logomark-round.svg" width="30" height="30" alt="">
         <strong>Snagged Reviews</strong><span class="a-tag">Admin</span>
       </div>
       <div class="a-head__actions">
@@ -176,6 +176,6 @@
 
   <div id="toast" class="a-toast" hidden></div>
 
-  <script src="admin.js" defer></script>
+  <script src="/admin/admin.js" defer></script>
 </body>
 </html>
