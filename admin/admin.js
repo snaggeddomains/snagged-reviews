@@ -33,6 +33,8 @@
   var baseline = "[]";   // JSON of last-loaded/last-published state (for dirty check)
   var fileSha = null;    // git blob sha of data/reviews.json (needed to PUT)
   var editing = null;    // index being edited, or null when adding
+  var tokenBarForced = false; // user opened the token bar to change a working token
+  var tokenError = false;     // last request was rejected (401) — prompt for a new token
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -190,13 +192,25 @@
       reviews = await apiGet();
       baseline = JSON.stringify(reviews);
       editing = null;
+      if (MODE === "token" && tokenError) { tokenError = false; refreshTokenUI(); } // token works again -> hide bar
       renderList();
       renderPreview();
       toast("Loaded " + reviews.length + " reviews.", "ok");
     } catch (e) {
-      if (e.status === 401) toast("Not authorized (401). Check the password" + (MODE === "token" ? "/token." : "."), "err");
+      if (e.status === 401) handleUnauthorized();
       else if (e.status === 404) toast("Could not find data/reviews.json in the repo.", "err");
       else toast("Load failed: " + e.message, "err");
+    }
+  }
+
+  // A token/password was rejected. In token mode, re-open the bar to prompt for a new one.
+  function handleUnauthorized() {
+    if (MODE === "token") {
+      tokenError = true;
+      refreshTokenUI();
+      toast("GitHub token was rejected (401). Paste a valid token.", "err");
+    } else {
+      toast("Not authorized (401). Check the password.", "err");
     }
   }
 
@@ -206,6 +220,7 @@
     btn.disabled = true; btn.textContent = "Publishing…";
     try {
       var res = await apiPut();
+      if (res.status === 401) { handleUnauthorized(); return; }
       if (res.status === 409) { toast("Conflict — data changed. Reloading…", "err"); await loadReviews(); return; }
       if (!res.ok) { var t = await res.text(); toast("Publish failed (" + res.status + "): " + t.slice(0, 140), "err"); return; }
       if (MODE === "token") { var j = await res.json(); fileSha = j.content.sha; }
@@ -370,15 +385,33 @@
   }
 
   // ---- token ui ----
+  // The token bar only appears when a token is actually needed: none saved, the
+  // saved one was rejected, or the user clicked "Change token". Once a working
+  // token is saved it stays hidden.
   function refreshTokenUI() {
-    // In backend mode no token is needed — the Worker holds it. Hide the bar.
-    if (MODE === "backend") { $("token-bar").hidden = true; updateDirty(); return; }
+    if (MODE === "backend") {
+      $("token-bar").hidden = true;
+      $("btn-changetoken").hidden = true;
+      updateDirty();
+      return;
+    }
     var has = !!token;
-    $("token-status").textContent = has ? "Token saved" : "No GitHub token";
-    $("token-status").className = "a-pill " + (has ? "a-pill--ok" : "a-pill--warn");
+    var needed = !has || tokenError || tokenBarForced;
+
+    $("token-bar").hidden = !needed;
+    $("btn-changetoken").hidden = !has || needed; // offer "Change token" only while the bar is hidden
+
+    if (tokenError) {
+      $("token-status").textContent = "Token rejected";
+      $("token-status").className = "a-pill a-pill--warn";
+    } else {
+      $("token-status").textContent = has ? "Token saved" : "No GitHub token";
+      $("token-status").className = "a-pill " + (has ? "a-pill--ok" : "a-pill--warn");
+    }
     $("btn-forgettoken").hidden = !has;
     $("token-input").value = "";
-    $("token-input").placeholder = has ? "Token saved (paste a new one to replace)" : "Paste GitHub token (ghp_… or github_pat_…)";
+    $("token-input").placeholder = tokenError ? "Paste a valid GitHub token"
+      : has ? "Token saved (paste a new one to replace)" : "Paste GitHub token (ghp_… or github_pat_…)";
     updateDirty();
   }
 
@@ -386,17 +419,21 @@
     var v = $("token-input").value.trim();
     if (!v) { toast("Paste a token first.", "err"); return; }
     token = v;
+    tokenError = false;
+    tokenBarForced = false;
     sessionStorage.setItem(TOKEN_KEY, v);
     if ($("token-remember").checked) localStorage.setItem(TOKEN_KEY, v);
     else localStorage.removeItem(TOKEN_KEY);
-    refreshTokenUI();
+    refreshTokenUI(); // hides the bar now that a token is saved
     loadReviews();
   }
   function forgetToken() {
     token = "";
+    tokenError = false;
+    tokenBarForced = false;
     localStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(TOKEN_KEY);
-    refreshTokenUI();
+    refreshTokenUI(); // no token -> bar reappears to prompt
     toast("Token forgotten.", "ok");
   }
 
@@ -517,6 +554,11 @@
     });
     $("btn-savetoken").addEventListener("click", saveToken);
     $("btn-forgettoken").addEventListener("click", forgetToken);
+    $("btn-changetoken").addEventListener("click", function () {
+      tokenBarForced = true;
+      refreshTokenUI();
+      $("token-input").focus();
+    });
     $("review-form").addEventListener("submit", applyForm);
     $("review-form").addEventListener("input", renderPreview);
     $("f-source").addEventListener("change", function () { syncSourceFields(); renderPreview(); });
