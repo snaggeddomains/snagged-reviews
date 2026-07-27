@@ -22,10 +22,24 @@ in your browser and publishes by committing to the repo via the GitHub API:
 Reviews are the single source of truth in **`data/reviews.json`**. You can also
 edit that file by hand; the Action rebuilds either way.
 
+## Two modes
+
+The admin works in either of two modes, chosen by the `BACKEND_URL` constant at
+the top of `admin/admin.js`:
+
+- **Token mode** (default, `BACKEND_URL = ""`): each person signs in with the
+  password and pastes their own GitHub token once per browser.
+- **Backend mode** (recommended for more than one person, e.g. an **EA**): set
+  `BACKEND_URL` to a deployed Cloudflare Worker and everyone signs in with **only
+  the password** — no token in anyone's browser. See [`worker/README.md`](../worker/README.md)
+  for the ~5-minute deploy. In this mode the password is verified server-side, so
+  it's real auth rather than a client-side gate.
+
 ## Signing in
 
 - **URL:** https://snaggedreviews.com/admin/
-- **Default password:** `snagged2026`
+- **Default password (token mode):** `snagged2026`
+- **Backend mode password:** whatever you set as the Worker's `ADMIN_PASSWORD`.
 
 ### Change the password
 

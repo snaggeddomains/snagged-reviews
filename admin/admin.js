@@ -11,14 +11,24 @@
 
   // ---- config ----
   var REPO = { owner: "snaggeddomains", name: "snagged-reviews", branch: "main", path: "data/reviews.json" };
-  // SHA-256 of the admin password. Default password is "snagged2026".
+
+  // BACKEND MODE (recommended for multiple users, e.g. an EA):
+  // Deploy worker/admin-worker.js (see worker/README.md) and paste its URL here.
+  // When set, the admin publishes through the Worker and users only need the
+  // PASSWORD — no GitHub token in the browser. Leave "" to use token mode.
+  var BACKEND_URL = "";
+
+  // TOKEN MODE only: SHA-256 of the admin password. Default is "snagged2026".
   // To change it, run:  printf '%s' 'YOUR NEW PASSWORD' | shasum -a 256
-  // and paste the hex digest here.
+  // and paste the hex digest here. (In backend mode the password is the
+  // Worker's ADMIN_PASSWORD secret, and this hash is not used.)
   var PASS_HASH = "5c3c8d0aec5f4ae73b9e78dee5fe8c86d0c4daa0b623241f7cc2960e07e13c15";
   var TOKEN_KEY = "sr_admin_token";
+  var MODE = BACKEND_URL ? "backend" : "token";
 
   // ---- state ----
   var token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
+  var adminPassword = sessionStorage.getItem("sr_admin_pw") || ""; // backend mode only
   var reviews = [];      // working copy
   var baseline = "[]";   // JSON of last-loaded/last-published state (for dirty check)
   var fileSha = null;    // git blob sha of data/reviews.json (needed to PUT)
@@ -138,47 +148,67 @@
   function apiBase() {
     return "/repos/" + REPO.owner + "/" + REPO.name + "/contents/" + REPO.path;
   }
+  function backendBase() { return BACKEND_URL.replace(/\/$/, ""); }
+  function isAuthed() { return MODE === "backend" ? !!adminPassword : !!token; }
+
+  // Fetch the current reviews array. Throws Error with .status on failure.
+  async function apiGet() {
+    if (MODE === "backend") {
+      var res = await fetch(backendBase() + "/reviews", { headers: { "X-Admin-Password": adminPassword } });
+      if (!res.ok) { var e = new Error("HTTP " + res.status); e.status = res.status; throw e; }
+      var j = await res.json();
+      fileSha = null;
+      return j.reviews;
+    }
+    var r = await gh(apiBase() + "?ref=" + REPO.branch + "&t=" + Date.now());
+    if (!r.ok) { var e2 = new Error("HTTP " + r.status); e2.status = r.status; throw e2; }
+    var data = await r.json();
+    fileSha = data.sha;
+    return JSON.parse(b64decode(data.content));
+  }
+
+  // Commit the working reviews array. Returns the fetch Response.
+  async function apiPut() {
+    if (MODE === "backend") {
+      return fetch(backendBase() + "/reviews", {
+        method: "PUT",
+        headers: { "X-Admin-Password": adminPassword, "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews: reviews, message: "Update reviews via admin" })
+      });
+    }
+    var body = JSON.stringify(reviews, null, 2) + "\n";
+    return gh(apiBase(), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Update reviews via admin", content: b64encode(body), sha: fileSha, branch: REPO.branch })
+    });
+  }
 
   async function loadReviews() {
-    if (!token) { renderList(); return; }
+    if (!isAuthed()) { renderList(); return; }
     try {
-      var res = await gh(apiBase() + "?ref=" + REPO.branch + "&t=" + Date.now());
-      if (res.status === 401) { toast("Token rejected (401). Check the token and its permissions.", "err"); return; }
-      if (res.status === 404) { toast("Could not find data/reviews.json in the repo.", "err"); return; }
-      if (!res.ok) { toast("Load failed (" + res.status + ").", "err"); return; }
-      var data = await res.json();
-      fileSha = data.sha;
-      reviews = JSON.parse(b64decode(data.content));
+      reviews = await apiGet();
       baseline = JSON.stringify(reviews);
       editing = null;
       renderList();
       renderPreview();
       toast("Loaded " + reviews.length + " reviews.", "ok");
     } catch (e) {
-      toast("Load error: " + e.message, "err");
+      if (e.status === 401) toast("Not authorized (401). Check the password" + (MODE === "token" ? "/token." : "."), "err");
+      else if (e.status === 404) toast("Could not find data/reviews.json in the repo.", "err");
+      else toast("Load failed: " + e.message, "err");
     }
   }
 
   async function publish() {
-    if (!token) { toast("Add a GitHub token first.", "err"); return; }
+    if (!isAuthed()) { toast(MODE === "backend" ? "Sign in first." : "Add a GitHub token first.", "err"); return; }
     var btn = $("btn-publish");
     btn.disabled = true; btn.textContent = "Publishing…";
     try {
-      var body = JSON.stringify(reviews, null, 2) + "\n";
-      var res = await gh(apiBase(), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: "Update reviews via admin",
-          content: b64encode(body),
-          sha: fileSha,
-          branch: REPO.branch
-        })
-      });
-      if (res.status === 409) { toast("Conflict — data changed on GitHub. Reloading…", "err"); await loadReviews(); return; }
+      var res = await apiPut();
+      if (res.status === 409) { toast("Conflict — data changed. Reloading…", "err"); await loadReviews(); return; }
       if (!res.ok) { var t = await res.text(); toast("Publish failed (" + res.status + "): " + t.slice(0, 140), "err"); return; }
-      var j = await res.json();
-      fileSha = j.content.sha;
+      if (MODE === "token") { var j = await res.json(); fileSha = j.content.sha; }
       baseline = JSON.stringify(reviews);
       updateDirty();
       toast("Published! The site rebuilds in ~1 minute.", "ok");
@@ -196,7 +226,7 @@
     var dirty = isDirty();
     $("dirty-flag").hidden = !dirty;
     $("btn-discard").hidden = !dirty;
-    $("btn-publish").disabled = !dirty || !token;
+    $("btn-publish").disabled = !dirty || !isAuthed();
     $("count-label").textContent = reviews.length + (reviews.length === 1 ? " review" : " reviews");
   }
 
@@ -341,6 +371,8 @@
 
   // ---- token ui ----
   function refreshTokenUI() {
+    // In backend mode no token is needed — the Worker holds it. Hide the bar.
+    if (MODE === "backend") { $("token-bar").hidden = true; updateDirty(); return; }
     var has = !!token;
     $("token-status").textContent = has ? "Token saved" : "No GitHub token";
     $("token-status").className = "a-pill " + (has ? "a-pill--ok" : "a-pill--warn");
@@ -368,13 +400,72 @@
     toast("Token forgotten.", "ok");
   }
 
-  // ---- auth gate ----
-  async function sha256hex(s) {
-    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
-      return b.toString(16).padStart(2, "0");
-    }).join("");
+  // Pure-JS SHA-256 (UTF-8 safe) — fallback when SubtleCrypto is unavailable.
+  function sha256hexJS(ascii) {
+    function rr(v, a) { return (v >>> a) | (v << (32 - a)); }
+    var mp = Math.pow, maxWord = mp(2, 32), result = "", words = [], bitLen;
+    var hash = [], k = [], primeCounter = 0, isComposite = {};
+    for (var candidate = 2; primeCounter < 64; candidate++) {
+      if (!isComposite[candidate]) {
+        for (var i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+        hash[primeCounter] = (mp(candidate, 0.5) * maxWord) | 0;
+        k[primeCounter++] = (mp(candidate, 1 / 3) * maxWord) | 0;
+      }
+    }
+    var bytes = [];
+    for (var ci = 0; ci < ascii.length; ci++) {
+      var cc = ascii.charCodeAt(ci);
+      if (cc < 0x80) bytes.push(cc);
+      else if (cc < 0x800) bytes.push(0xc0 | (cc >> 6), 0x80 | (cc & 0x3f));
+      else if (cc < 0xd800 || cc >= 0xe000) bytes.push(0xe0 | (cc >> 12), 0x80 | ((cc >> 6) & 0x3f), 0x80 | (cc & 0x3f));
+      else { ci++; var cp = 0x10000 + (((cc & 0x3ff) << 10) | (ascii.charCodeAt(ci) & 0x3ff)); bytes.push(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3f), 0x80 | ((cp >> 6) & 0x3f), 0x80 | (cp & 0x3f)); }
+    }
+    ascii = String.fromCharCode.apply(null, bytes);
+    bitLen = ascii.length * 8;
+    ascii += "\x80";
+    while (ascii.length % 64 - 56) ascii += "\x00";
+    for (var j = 0; j < ascii.length; j++) words[j >> 2] |= ascii.charCodeAt(j) << ((3 - j) % 4) * 8;
+    words[words.length] = (bitLen / maxWord) | 0;
+    words[words.length] = bitLen;
+    for (var jj = 0; jj < words.length;) {
+      var w = words.slice(jj, jj += 16), oldHash = hash;
+      hash = hash.slice(0, 8);
+      for (var it = 0; it < 64; it++) {
+        var w15 = w[it - 15], w2 = w[it - 2], a = hash[0], e = hash[4];
+        var t1 = hash[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[it] +
+          (w[it] = it < 16 ? w[it] : (w[it - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[it - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
+        var t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+        hash = [(t1 + t2) | 0].concat(hash);
+        hash[4] = (hash[4] + t1) | 0;
+      }
+      for (var ir = 0; ir < 8; ir++) hash[ir] = (hash[ir] + oldHash[ir]) | 0;
+    }
+    for (var n = 0; n < 8; n++) for (var ii = 3; ii + 1; ii--) { var b = (hash[n] >> (ii * 8)) & 255; result += ((b < 16) ? 0 : "") + b.toString(16); }
+    return result;
   }
+
+  // ---- auth gate ----
+  // Prefer the native SubtleCrypto; fall back to a pure-JS SHA-256 so login also
+  // works in non-secure contexts (plain http://, file://, before HTTPS is ready).
+  async function sha256hex(s) {
+    try {
+      if (self.crypto && self.crypto.subtle) {
+        var buf = await self.crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+          return b.toString(16).padStart(2, "0");
+        }).join("");
+      }
+    } catch (e) { /* fall through to JS implementation */ }
+    return sha256hexJS(s);
+  }
+
+  function showGateErr(msg) {
+    var el = $("gate-err");
+    el.textContent = msg || "Incorrect password.";
+    el.hidden = false;
+    $("gate-pass").value = "";
+  }
+
   function showApp() {
     $("gate").hidden = true;
     $("app").hidden = false;
@@ -383,24 +474,41 @@
     renderPreview();
     loadReviews();
   }
+
   async function tryLogin(e) {
     e.preventDefault();
+    $("gate-err").hidden = true;
     var pass = $("gate-pass").value;
-    var hex = await sha256hex(pass);
-    if (hex === PASS_HASH) {
-      sessionStorage.setItem("sr_admin_ok", "1");
-      showApp();
-    } else {
-      $("gate-err").hidden = false;
-      $("gate-pass").value = "";
+    try {
+      if (MODE === "backend") {
+        // The Worker is the real authority: verify the password by loading data.
+        adminPassword = pass;
+        var res = await fetch(backendBase() + "/reviews", { headers: { "X-Admin-Password": pass } });
+        if (res.status === 401) { adminPassword = ""; showGateErr(); return; }
+        if (!res.ok) { adminPassword = ""; showGateErr("Backend error (" + res.status + "). Try again."); return; }
+        sessionStorage.setItem("sr_admin_ok", "1");
+        sessionStorage.setItem("sr_admin_pw", pass);
+        showApp();
+      } else {
+        var hex = await sha256hex(pass);
+        if (hex === PASS_HASH) { sessionStorage.setItem("sr_admin_ok", "1"); showApp(); }
+        else showGateErr();
+      }
+    } catch (err) {
+      showGateErr("Login error: " + err.message);
     }
   }
 
   // ---- wire up ----
   function init() {
+    if (MODE === "backend") {
+      $("gate-note").textContent = "Passwords are verified securely on the server. Ask the site owner for the admin password.";
+    }
     $("gate-form").addEventListener("submit", tryLogin);
     $("btn-signout").addEventListener("click", function () {
       sessionStorage.removeItem("sr_admin_ok");
+      sessionStorage.removeItem("sr_admin_pw");
+      adminPassword = "";
       location.reload();
     });
     $("btn-reload").addEventListener("click", function () {
