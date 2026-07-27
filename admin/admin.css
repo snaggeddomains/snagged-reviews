@@ -4,6 +4,12 @@
 
 body.admin { background: var(--cream-2); }
 
+/* The [hidden] attribute must always win — several toggles (the login gate, the
+   token bar, conditional fields) set element.hidden, but rules like `.gate {
+   display: grid }` would otherwise override the browser default and keep them
+   visible. This is the fix for "login does nothing": the gate stayed on top. */
+[hidden] { display: none !important; }
+
 /* ---------------- login gate ---------------- */
 .gate {
   min-height: 100vh; display: grid; place-items: center; padding: 24px;
